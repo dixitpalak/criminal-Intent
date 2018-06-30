@@ -2,7 +2,7 @@ package com.knoxpo.palak.criminalintent;
 
 public class CrimeListActivity extends SingleFragmentActivity {
     @Override
-    protected CrimeListFragment createFragment() {
+    protected CrimeListFragment createFragment(){
         return new CrimeListFragment();
     }
 }

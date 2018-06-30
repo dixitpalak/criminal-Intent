@@ -1,12 +1,12 @@
 package com.knoxpo.palak.criminalintent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,13 +31,23 @@ public class CrimeListFragment extends Fragment {
         updateUI();
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
     private void updateUI() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
+        if(mAdapter==null){
         mAdapter = new CrimeAdapter(crimes);
         mRecyclerView.setAdapter(mAdapter);
-    }
-    private class CrimeHolder extends RecyclerView.ViewHolder {
+    }else{
+            mAdapter.notifyDataSetChanged();
+        }
+    private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Crime mCrime;
         private TextView mTitleTextView;
         private TextView mDateTextView;
@@ -49,12 +59,19 @@ public class CrimeListFragment extends Fragment {
             mTitleTextView = (TextView) itemView.findViewById(R.id.crime_title);
             mDateTextView = (TextView) itemView.findViewById(R.id.crime_date);
             mSolvedImageView=(ImageView)itemView.findViewById(R.id.crime_solved);
+            itemView.setOnClickListener(this);
         }
         public void bind(Crime crime) {
             mCrime = crime;
             mTitleTextView.setText(mCrime.getTitle());
             mDateTextView.setText(mCrime.getDate().toString());
             mSolvedImageView.setVisibility(crime.isSolved()?View.VISIBLE:View.INVISIBLE);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent=CriminalActivity.newIntent(getActivity(),mCrime.getId());
+            startActivity(intent);
         }
     }
     private  class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
